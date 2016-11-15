@@ -57,7 +57,7 @@ public class FeatureOptionsPanel extends JPanel {
 
 	private JComboBox getComboBox() {
 		if (combo == null) {
-			String[] options = new String[] { "Por color", "Por histograma" };
+			String[] options = new String[] { "Por cor", "Por histograma" };
 			combo = new JComboBox(options);
 			selection = Feature.COLOR;
 			combo.addActionListener(new ActionListener() {
@@ -108,31 +108,31 @@ public class FeatureOptionsPanel extends JPanel {
 
 		};
 
-		JRadioButton rgb = new JRadioButton("RGB", true);
-		rgb.setMnemonic(KeyEvent.VK_R);
-		rgb.setActionCommand("rgb");
-		rgb.addActionListener(al);
+//		JRadioButton rgb = new JRadioButton("RGB", true);
+//		rgb.setMnemonic(KeyEvent.VK_R);
+//		rgb.setActionCommand("rgb");
+//		rgb.addActionListener(al);
 		parameters.put("colorSpace", "rgb");
 
-		JRadioButton hsb = new JRadioButton("HSB");
-		hsb.setMnemonic(KeyEvent.VK_H);
-		hsb.setActionCommand("hsb");
-		hsb.addActionListener(al);
+//		JRadioButton hsb = new JRadioButton("HSB");
+//		hsb.setMnemonic(KeyEvent.VK_H);
+//		hsb.setActionCommand("hsb");
+//		hsb.addActionListener(al);
 
-		JRadioButton gs = new JRadioButton("Escala de grises");
-		gs.setMnemonic(KeyEvent.VK_G);
-		gs.setActionCommand("grayscale");
-		gs.addActionListener(al);
+//		JRadioButton gs = new JRadioButton("Escala de grises");
+//		gs.setMnemonic(KeyEvent.VK_G);
+//		gs.setActionCommand("grayscale");
+//		gs.addActionListener(al);
 
-		ButtonGroup group = new ButtonGroup();
-		group.add(rgb);
-		group.add(hsb);
-		group.add(gs);
-
+//		ButtonGroup group = new ButtonGroup();
+//		group.add(rgb);
+//		group.add(hsb);
+//		group.add(gs);
+//
 		JPanel p = new JPanel();
-		p.add(rgb);
-		p.add(hsb);
-		p.add(gs);
+//		p.add(rgb);
+//		p.add(hsb);
+//		p.add(gs);
 		return p;
 	}
 
@@ -146,7 +146,7 @@ public class FeatureOptionsPanel extends JPanel {
 			c.gridwidth = GridBagConstraints.REMAINDER;
 			c.gridx = 0;
 			c.gridy = 0;
-			addSpinner("Clases por canal:", "intervalClassesCountPerChannel",
+			addSpinner("Classes por canal:", "intervalClassesCountPerChannel",
 					new SpinnerNumberModel(5, 2, 10, 1), c);
 			c.gridy = 1;
 			addSpinner("Influencia X:", "xinfluence", new SpinnerNumberModel(0,

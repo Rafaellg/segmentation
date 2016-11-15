@@ -19,22 +19,14 @@ public class ToolBar extends JToolBar {
 		ctrl = controller;
 		setFloatable(false);
 		add(getButton("Abrir...", "document-open", "open"));
-		add(getButton("Guardar como...", "media-floppy", "saveAs"));
-		add(getButton("Deshacer todo", "edit-undo", "undoAll"));
-		add(getButton("Filtro Blur", "stock_standard-filter", "blurFilter"));
-		add(getButton("Filtro Sharpen", "stock_standard-filter", "sharpenFilter"));
-		add(getButton("Reducir resolución", "stock_standard-filter", "reduceResolutionFilter"));
-		add(getButton("Filtro Max", "stock_standard-filter", "maxFilter"));
-		add(getButton("Filtro Average", "stock_standard-filter", "minFilter"));
-		add(getButton("Filtro Max-Min", "stock_standard-filter", "maxMinFilter"));
-		add(getButton("Filtro Midpoint", "stock_standard-filter", "midPointFilter"));
-		add(getButton("Ecualizar", "stock_standard-filter", "equalizeFilter"));
+		add(getButton("Salvar como...", "media-floppy", "saveAs"));
+		add(getButton("Desfazer tudo", "edit-undo", "undoAll"));
 		add(getButton("Segmentar...", "stock_filters-pop-art", "applySegmentation"));
-		add(getButton("Acercar", "zoom-in", "zoomIn"));
-		add(getButton("Alejar", "zoom-out", "zoomOut"));
+		add(getButton("Zoom in", "zoom-in", "zoomIn"));
+		add(getButton("Zoom out", "zoom-out", "zoomOut"));
 		add(getButton("Escala original", "zoom-original", "zoomOriginal"));
-		add(getButton("Ver a izquierda y derecha", "stock_view-left-right", "viewHorizontal"));
-		add(getButton("Ver arriba y abajo", "stock_view-top-bottom", "viewVertical"));
+		add(getButton("Exibição horizontal", "stock_view-left-right", "viewHorizontal"));
+		add(getButton("Exibição vertical", "stock_view-top-bottom", "viewVertical"));
 	}
 
 	private JButton getButton(String label, String icon, String action) {

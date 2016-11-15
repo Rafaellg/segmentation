@@ -14,8 +14,7 @@ import model.segmentation.*;
 public class SegmentationOptionsPanel extends JPanel {
 
 	private static enum SegmentationMethod {
-		K_MEANS("K-means"), ANTI_POLE("Anti-pole"), SPLIT_AND_MERGE(
-				"Split & Merge");
+		K_MEANS("K-means"), ANTI_POLE("Anti-pole"), SPLIT_AND_MERGE("Split & Merge");
 
 		private String name;
 
@@ -26,11 +25,8 @@ public class SegmentationOptionsPanel extends JPanel {
 		public String toString() {
 			return name;
 		}
-	};
+	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private JComboBox combo;
@@ -42,7 +38,7 @@ public class SegmentationOptionsPanel extends JPanel {
 	private HashMap<String, String> parameters;
 
 	public SegmentationOptionsPanel() {
-		parameters = new HashMap<String, String>();
+		parameters = new HashMap<>();
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTH;
@@ -130,23 +126,23 @@ public class SegmentationOptionsPanel extends JPanel {
 		
 		case K_MEANS:
 			c.gridy = 0;
-			addSpinner("Cant. máx. de clusters:", "clustersCount", new SpinnerNumberModel(10, 2, 50, 1), c);
+			addSpinner("Quant. máx. de clusters:", "clustersCount", new SpinnerNumberModel(10, 2, 50, 1), c);
 			c.insets = new Insets(2, 4, 2, 4);
 			c.gridy = 1;
-			addCheckBox("Usar todos los clusters", "useAllClusters", false, c);
+			addCheckBox("Usar todos os clusters", "useAllClusters", false, c);
 			break;
 			
 		case ANTI_POLE:
 			c.gridy = 0;
-			addSpinner("Radio máx. de clusters:", "radio", new SpinnerNumberModel(200, 20, 400, 1), c);
+			addSpinner("Raio máx. de clusters:", "radio", new SpinnerNumberModel(200, 20, 400, 1), c);
 			break;
 			
 		case SPLIT_AND_MERGE:
 			c.gridy = 0;
-			addSpinner("Límite Split:", "splitStandardDeviation", new SpinnerNumberModel(5, 1, 50, 1), c);
+			addSpinner("Limite Split:", "splitStandardDeviation", new SpinnerNumberModel(5, 1, 50, 1), c);
 			c.insets = new Insets(2, 4, 2, 4);
 			c.gridy = 1;
-			addSpinner("Límite Merge:", "mergeStandardDeviation", new SpinnerNumberModel(15, 1, 50, 1), c);
+			addSpinner("Limite Merge:", "mergeStandardDeviation", new SpinnerNumberModel(15, 1, 50, 1), c);
 			c.gridy = 2;
 			addSpinner("Área mínima:", "minSize", new SpinnerNumberModel(3, 1, 100, 1), c);
 			break;

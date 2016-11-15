@@ -17,14 +17,10 @@ public class ActionListener implements java.awt.event.ActionListener, Runnable {
 			method = c.getMethod(action, new Class<?>[] {});
 		} catch (SecurityException e) {
 			e.printStackTrace();
-			ctrl.raiseException("Se ha producido un error inesperado al "
-					+ "asociar una acción del controlador.\n"
-					+ "La excepción capturada fue: " + e.toString());
+			ctrl.raiseException("Houve um erro inesperado associando a alguma ação do controlador.\n" + e.toString());
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-			ctrl.raiseException("Se ha producido un error inesperado al "
-					+ "asociar una acción del controlador.\n"
-					+ "La excepción capturada fue: " + e.toString());
+			ctrl.raiseException("Houve um erro inesperado associando a alguma ação do controlador..\n" + e.toString());
 		}
 	}
 
@@ -40,14 +36,10 @@ public class ActionListener implements java.awt.event.ActionListener, Runnable {
 			method.invoke(ctrl);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-			ctrl.raiseException("Se ha producido un error inesperado al "
-					+ "ejecutar una acción del controlador.\n"
-					+ "La excepción capturada fue: " + e.toString());
+			ctrl.raiseException("Houve um erro inesperado associando a alguma ação do controlador..\n" + e.toString());
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			ctrl.raiseException("Se ha producido un error inesperado al "
-					+ "ejecutar una acción del controlador.\n"
-					+ "La excepción capturada fue: " + e.toString());
+			ctrl.raiseException("Houve um erro inesperado associando a alguma ação do controlador..\n" + e.toString());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 			Throwable t = e.getCause();
@@ -59,8 +51,7 @@ public class ActionListener implements java.awt.event.ActionListener, Runnable {
 				}
 				s.append("\t\ten " + st[i].toString() + "\n");
 			}
-			ctrl.raiseException("Se ha producido un error en el programa.\n\n"
-					+ "La excepción capturada fue: " + t.toString() + "\n"
+			ctrl.raiseException("Houve um erro inesperado no programa.\n" + t.toString() + "\n"
 					+ s.toString());
 		}
 	}

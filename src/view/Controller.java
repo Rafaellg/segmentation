@@ -50,8 +50,8 @@ public class Controller {
 			try {
 				original = ImageIO.read(f);
 			} catch (IOException e) {
-				raiseException(String.format("No se puede abrir el archivo:"
-						+ "\n%s\n\nDetalle: %s", f.toString(), e
+				raiseException(String.format("Não foi possíveis abrir o arquivo:"
+						+ "\n%s\n\nDetalhe: %s", f.toString(), e
 						.getLocalizedMessage()));
 			}
 			undoAll();
@@ -60,7 +60,7 @@ public class Controller {
 
 	public void saveAs() {
 		if (original == null || matrix == null) {
-			raiseException("No hay ninguna imagen abierta.");
+			raiseException("Sem imagens abertas.");
 			return;
 		}
 		saveAs(view.saveFileWithFileChooser());
@@ -77,15 +77,15 @@ public class Controller {
 			BufferedImage segmented = matrix.getBufferedImage();
 			ImageIO.write(segmented, extension, f);
 		} catch (IOException e) {
-			view.showErrorDialog("Error de escritura", String.format(
-					"No se puede guardar el archivo:\n%s\n\nDetalle: %s", f
+			view.showErrorDialog("Erro de gravação", String.format(
+					"Não foi possível salvar o arquivo:\n%s\n\nDetalhe: %s", f
 							.toString(), e.getLocalizedMessage()));
 		}
 	}
 
 	public void undoAll() {
 		if (original == null) {
-			raiseException("No hay ninguna imagen abierta.");
+			raiseException("Sem imagens abertas..");
 			return;
 		}
 
@@ -140,7 +140,7 @@ public class Controller {
 
 	public void filter(FilterAlgorithm fa) {
 		if (original == null || matrix == null) {
-			raiseException("No hay ninguna imagen abierta.");
+			raiseException("Sem imagens abertas.");
 			return;
 		}
 		ImageMatrix output = new ImageMatrix(matrix.getWidth(), matrix
@@ -152,7 +152,7 @@ public class Controller {
 
 	public void applySegmentation() {
 		if (original == null || matrix == null) {
-			raiseException("No hay ninguna imagen abierta.");
+			raiseException("Sem imagens abertas.");
 			return;
 		}
 		OptionsPanel p = new OptionsPanel();
@@ -160,7 +160,7 @@ public class Controller {
 		if (view.showConfirmDialog(p, "Segmentar")) {
 			ImageConverter ic = p.getSelectedFeature(matrix);
 			final FeatureMatrix fm = ic.createFeatureMatrix();
-			getProgressDialog().open("Procesando...");
+			getProgressDialog().open("Processando...");
 			stopSegmentation();
 			algorithm = p.getSelectedSegmentationMethod();
 			algorithm.process(fm, new SegmentationObserver() {
@@ -168,7 +168,7 @@ public class Controller {
 				private int i = 0;
 
 				public void onChange() {
-					String s = String.format("Procesando... (Iteración Nº%d)",
+					String s = String.format("Processando... (%d)",
 							Integer.valueOf(++i));
 					getProgressDialog().setLabel(s);
 					matrix = fm.getImageMatrix();
@@ -189,7 +189,7 @@ public class Controller {
 		if (dialog == null) {
 			ActionListener al = new ActionListener(this, "stopSegmentation");
 			dialog = new ProgressDialog(view.createDialog(
-					"Progreso de la segmentación", false), al);
+					"Progresso da segmentação", false), al);
 		}
 		return dialog;
 	}
@@ -224,15 +224,15 @@ public class Controller {
 
 	public void scale(double factor) {
 		if (original == null || matrix == null) {
-			raiseException("No hay ninguna imagen abierta.");
+			raiseException("Sem imagens abertas.");
 			return;
 		}
 		if (factor > 4.0) {
-			raiseException("La imagen no se puede acercar más.");
+			raiseException("Não é possível ampliar mais.");
 			return;
 		}
 		if (factor < 1.0 / 8.0) {
-			raiseException("La imagen no se puede alejar más.");
+			raiseException("Não é possível distanciar mais.");
 			return;
 		}
 		zoom = factor;
@@ -241,20 +241,22 @@ public class Controller {
 	}
 
 	public void about() {
-		final String s = "Trabajo Práctico Especial Nº1\n"
-				+ "Computación Gráfica\n"
-				+ "Este programa muestra distintos métodos de segmentación\n"
-				+ "de imágenes que producen diversos resultados dependiendo\n"
-				+ "de los parámetros y los filtros aplicados.\n\n"
-				+ "Autores:\n"
+		final String s = "Demonstração de Segmentação\n"
+				+ "Adaptação de um trabalho de Computação Gráfica – ITBA – 2008.\n\n"
+				+ "Autores da adaptação:\n"
+				+ "\tRafael Guimarães de Sousa\n"
+				+ "\tTainá Viriato Mendes\n"
+				+ "\tAna Cristina Pereira\n"
+				+ "\tMarley Ribeiro Luz\n\n"
+				+ "Autores do trabalho original:\n"
 				+ "\tRafael Martín Bigio <rbigio@alu.itba.edu.ar>\n"
 				+ "\tSantiago Andrés Coffey <scoffey@alu.itba.edu.ar>\n"
 				+ "\tAndrés Santiago Gregoire <agregoir@alu.itba.edu.ar>\n";
-		view.showInformationDialog("Acerca del programa", s);
+		view.showInformationDialog("Sobre o programa", s);
 	}
 
 	public void raiseException(String message) {
-		view.showErrorDialog("Error", message);
+		view.showErrorDialog("Erro", message);
 	}
 
 }

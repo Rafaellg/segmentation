@@ -18,8 +18,8 @@ public class ImageView extends JPanel {
 
 	public ImageView() {
 		super(new GridLayout(1, 2));
-		pane1 = addScrollPane("Imagen original");
-		pane2 = addScrollPane("Imagen segmentada");
+		pane1 = addScrollPane("Imagem original");
+		pane2 = addScrollPane("Imagem segmentada");
 	}
 
 	private JScrollPane addScrollPane(String s) {
@@ -79,8 +79,7 @@ public class ImageView extends JPanel {
 	private void redrawPane(JScrollPane pane, Image image) {
 		JLabel label = null;
 		if (image == null) {
-			label = getScrollPaneLabel(pane == pane1 ? "Imagen original"
-					: "Imagen segmentada");
+			label = getScrollPaneLabel(pane == pane1 ? "Imagem original" : "Imagem segmentada");
 		} else {
 			label = new JLabel(new ImageIcon(image));
 		}

@@ -23,7 +23,7 @@ public class CgTpe1 extends JFrame {
 	public CgTpe1() {
 
 		// General JFrame attributes
-		super("Computación Gráfica - TPE1 - Segmentación");
+		super("Demonstração de Segmentação");
 		ctrl = new Controller(this);
 		setSize(640, 480);
 		setMinimumSize(new Dimension(300, 100));
@@ -36,7 +36,7 @@ public class CgTpe1 extends JFrame {
 			public void windowClosing(WindowEvent e) {
 				JFrame f = (JFrame) e.getSource();
 				int r = JOptionPane.showConfirmDialog(f,
-						"¿Está seguro que desea salir?", "Confirmar salida",
+						"Tem certeza que deseja sair?", "Atenção",
 						JOptionPane.YES_NO_OPTION);
 				if (r == JOptionPane.OK_OPTION) {
 					f.dispose();

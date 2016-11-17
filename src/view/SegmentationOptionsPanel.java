@@ -13,8 +13,8 @@ import model.segmentation.*;
 
 public class SegmentationOptionsPanel extends JPanel {
 
-	private static enum SegmentationMethod {
-		K_MEANS("K-means"), ANTI_POLE("Anti-pole"), SPLIT_AND_MERGE("Split & Merge");
+	private enum SegmentationMethod {
+		K_MEANS("K-means"), SPLIT_AND_MERGE("Split & Merge");
 
 		private String name;
 
@@ -92,9 +92,6 @@ public class SegmentationOptionsPanel extends JPanel {
 		case K_MEANS:
 			sa = new KMeans();
 			break;
-		case ANTI_POLE:
-			sa = new AntipoleTreeSegmentation();
-			break;
 		case SPLIT_AND_MERGE:
 			sa = new SplitAndMerge();
 			break;
@@ -130,11 +127,6 @@ public class SegmentationOptionsPanel extends JPanel {
 			c.insets = new Insets(2, 4, 2, 4);
 			c.gridy = 1;
 			addCheckBox("Usar todos os clusters", "useAllClusters", false, c);
-			break;
-			
-		case ANTI_POLE:
-			c.gridy = 0;
-			addSpinner("Raio máx. de clusters:", "radio", new SpinnerNumberModel(200, 20, 400, 1), c);
 			break;
 			
 		case SPLIT_AND_MERGE:

@@ -18,15 +18,15 @@ public class ToolBar extends JToolBar {
 		super();
 		ctrl = controller;
 		setFloatable(false);
-		add(getButton("Abrir...", "document-open", "open"));
-		add(getButton("Salvar como...", "media-floppy", "saveAs"));
-		add(getButton("Desfazer tudo", "edit-undo", "undoAll"));
-		add(getButton("Segmentar...", "stock_filters-pop-art", "applySegmentation"));
-		add(getButton("Zoom in", "zoom-in", "zoomIn"));
-		add(getButton("Zoom out", "zoom-out", "zoomOut"));
-		add(getButton("Escala original", "zoom-original", "zoomOriginal"));
-		add(getButton("Exibição horizontal", "stock_view-left-right", "viewHorizontal"));
-		add(getButton("Exibição vertical", "stock_view-top-bottom", "viewVertical"));
+		add(getButton("Abrir...", "icon-open", "open"));
+		add(getButton("Salvar como...", "icon-save", "saveAs"));
+		add(getButton("Desfazer tudo", "icon-undo", "undoAll"));
+		add(getButton("Segmentar...", "icon-segmentation", "applySegmentation"));
+		add(getButton("Zoom in", "icon-zoom-in", "zoomIn"));
+		add(getButton("Zoom out", "icon-zoom-out", "zoomOut"));
+		add(getButton("Escala original", "icon-original", "zoomOriginal"));
+		add(getButton("Exibição horizontal", "icon-horizontal", "viewHorizontal"));
+		add(getButton("Exibição vertical", "icon-vertical", "viewVertical"));
 	}
 
 	private JButton getButton(String label, String icon, String action) {

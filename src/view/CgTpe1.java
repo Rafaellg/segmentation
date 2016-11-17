@@ -23,7 +23,7 @@ public class CgTpe1 extends JFrame {
 	public CgTpe1() {
 
 		// General JFrame attributes
-		super("Demonstração de Segmentação");
+		super("Segmentação de Imagens");
 		ctrl = new Controller(this);
 		setSize(640, 480);
 		setMinimumSize(new Dimension(300, 100));

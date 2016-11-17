@@ -38,7 +38,7 @@ public class FeatureOptionsPanel extends JPanel {
 	private HashMap<String, String> parameters;
 
 	public FeatureOptionsPanel() {
-		parameters = new HashMap<String, String>();
+		parameters = new HashMap<>();
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -112,6 +112,7 @@ public class FeatureOptionsPanel extends JPanel {
 //		rgb.setMnemonic(KeyEvent.VK_R);
 //		rgb.setActionCommand("rgb");
 //		rgb.addActionListener(al);
+		// Seleciona o RGB automaticamente
 		parameters.put("colorSpace", "rgb");
 
 //		JRadioButton hsb = new JRadioButton("HSB");

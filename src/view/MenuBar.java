@@ -33,6 +33,25 @@ public class MenuBar extends JMenuBar {
 		JMenu menu = new JMenu("Editar");
 		menu.setMnemonic(KeyEvent.VK_E);
 		menu.add(getMenuItem("Desfazer tudo", "undoAll", KeyEvent.VK_D, 'Z'));
+		JMenu filterSubmenu = new JMenu("Filtrar");
+		filterSubmenu.setMnemonic(KeyEvent.VK_F);
+		filterSubmenu.add(getMenuItem("Blur", "blurFilter", KeyEvent.VK_B,
+				KeyEvent.VK_F1));
+		filterSubmenu.add(getMenuItem("Sharpen", "sharpenFilter",
+				KeyEvent.VK_H, KeyEvent.VK_F2));
+		filterSubmenu.add(getMenuItem("Reduzir resolução",
+				"reduceResolutionFilter", KeyEvent.VK_R, KeyEvent.VK_F3));
+		filterSubmenu.add(getMenuItem("Max", "maxFilter", KeyEvent.VK_X,
+				KeyEvent.VK_F4));
+		filterSubmenu.add(getMenuItem("Average", "minFilter", KeyEvent.VK_N,
+				KeyEvent.VK_F5));
+		filterSubmenu.add(getMenuItem("Max-Min", "maxMinFilter", KeyEvent.VK_M,
+				KeyEvent.VK_F6));
+		filterSubmenu.add(getMenuItem("Midpoint", "midPointFilter",
+				KeyEvent.VK_P, KeyEvent.VK_F7));
+		filterSubmenu.add(getMenuItem("Equalizar", "equalizeFilter",
+				KeyEvent.VK_Q, KeyEvent.VK_F8));
+		menu.add(filterSubmenu);
 		menu.add(getMenuItem("Segmentar...", "applySegmentation", KeyEvent.VK_S, 'G'));
 
 		return menu;

@@ -21,11 +21,11 @@ public class OptionsPanel extends JPanel {
 	private SegmentationOptionsPanel panel2;
 
 	public OptionsPanel() {
-		GridLayout layout = new GridLayout(1, 2);
+		GridLayout layout = new GridLayout(1, 1);
 		layout.setHgap(8);
 		setLayout(layout);
 		panel1 = new FeatureOptionsPanel();
-		add(panel1);
+//		add(panel1);
 		panel2 = new SegmentationOptionsPanel();
 		add(panel2);
 	}

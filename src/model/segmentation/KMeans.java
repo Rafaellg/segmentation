@@ -10,7 +10,7 @@ import model.FeatureMatrix;
 import model.SegmentationObserver;
 
 /**
- * Implementación del método K-means de segmentación.
+ * Metodo K-means para segmentacao.
  */
 public class KMeans extends SegmentationAlgorithm {
 
@@ -20,15 +20,13 @@ public class KMeans extends SegmentationAlgorithm {
 	private boolean useAllClusters = false;
 	private int clustersCount = 10;
 
-	// @Override
-	public void process(FeatureMatrix image, SegmentationObserver observer,
-			HashMap<String, String> params) {
+	public void process(FeatureMatrix image, SegmentationObserver observer, HashMap<String, String> params) {
 		this.image = image;
 		this.observer = observer;
 
 		String s = params.get("useAllClusters");
 		if (s != null) {
-			useAllClusters = (new Integer(s) == 0) ? false : true;
+			useAllClusters = new Integer(s) != 0;
 		}
 
 		s = params.get("clustersCount");
@@ -44,13 +42,14 @@ public class KMeans extends SegmentationAlgorithm {
 		boolean hasChanged = true;
 		boolean[] clustersEmptyStatus = new boolean[clusters.length];		
 
-		/* Mientras no hayan cambios en los clusters */
+		// Enquanto nao ha mudancas nos clusters
 		while (hasChanged && !isInterrupted()) {
-			for (int i = 0; i < clustersEmptyStatus.length; i++)
+			for (int i = 0; i < clustersEmptyStatus.length; i++) {
 				clustersEmptyStatus[i] = true;
-			//System.out.println("iterando");
+            }
 			hasChanged = false;
-			/* Poner cada objeto en el cluster que le quede mas cerca */
+
+			// Coloca cada objeto no cluster mais proximo
 			for (int k = 0; k < clusters.length; k++) {
 				Cluster c = clusters[k];
 				for (int i = 0; i < c.getObjects().size(); i++) {
@@ -59,19 +58,14 @@ public class KMeans extends SegmentationAlgorithm {
 
 					double minDistance = Double.MAX_VALUE;
 
-					/*
-					 * Buscar el cluster que tiene su centroide más cerca de
-					 * este objeto
-					 */
+					// Busca o cluster que tem seu centroide mais proximo deste objeto
 					for (int m = 0; m < clusters.length; m++) {
 
-						/* Si este cluster no esta ocupado, lo meto ahi y ya */
-						if (useAllClusters
-								&& (clusters[m].getCentroid() == null && clustersEmptyStatus[m])) {
+						// Se o cluster nao esta ocupado, coloca ele la
+						if (useAllClusters && (clusters[m].getCentroid() == null && clustersEmptyStatus[m])) {
 							bestCluster = m;
 							minDistance = 0;
 							clustersEmptyStatus[m] = false;
-							//System.out.println("clustrer vacio");
 						} else {
 							if (clusters[m].getCentroid() != null
 									&& distanceBetween(KMeans.this.image
@@ -85,7 +79,7 @@ public class KMeans extends SegmentationAlgorithm {
 						}
 					}
 
-					/* De ser necesario poner el objeto en el nuevo cluster */
+					// Verifica se e necessario colocar o objeto em um novo cluster
 					if (bestCluster != k) {
 						hasChanged = true;
 						KMeans.this.image.getSegment()[object.y][object.x] = (byte) bestCluster;
@@ -119,9 +113,9 @@ public class KMeans extends SegmentationAlgorithm {
 			}
 		}
 
-		for (int i = 0; i < clusters.length; i++) {
-			clusters[i].updateCentroid();
-		}
+        for (Cluster cluster : clusters) {
+            cluster.updateCentroid();
+        }
 
 	}
 
@@ -132,7 +126,6 @@ public class KMeans extends SegmentationAlgorithm {
 			for (int j = 0; j < image.getWidth(); j++) {
 				int clusterIndex = r.nextInt(clusters.length);
 				image.getSegment()[i][j] = (byte) clusterIndex;
-				// System.out.println(clusterIndex);
 			}
 		}
 
@@ -149,26 +142,29 @@ public class KMeans extends SegmentationAlgorithm {
 		return Math.sqrt(dist);
 	}
 
-	class Cluster {
-		private List<Point> objects; /* objetos que alberga */
-		private int[] centroid; /* centroide */
+	public void run() {
+		randomInit();
+		rebuildClusters();
+		generateClusters();
+	}
 
-		public Cluster() {
-			objects = new ArrayList<Point>();
+	// ---------- Objetos
+
+	class Cluster {
+		private List<Point> objects; /* Objetos que abrigam o ponto */
+		private int[] centroid; /* Centroide */
+
+        Cluster() {
+			objects = new ArrayList<>();
 			centroid = null;
 		}
 
-		public Cluster(List<Point> objects) {
-			this.objects = objects;
-			this.centroid = euclideanMeanDistance(objects);
-		}
-
 		public void add(Point o) {
+		    // Nao se computa o centroide por questoes de performance
 			objects.add(o);
-			/* No se recomputa el centroide por un tema de performance */
 		}
 
-		public void updateCentroid() {
+		void updateCentroid() {
 			if (objects != null && objects.size() > 0) {
 				centroid = euclideanMeanDistance(objects);
 			} else {
@@ -176,15 +172,15 @@ public class KMeans extends SegmentationAlgorithm {
 			}
 		}
 
-		public int[] getCentroid() {
+		int[] getCentroid() {
 			return centroid;
 		}
 
-		public List<Point> getObjects() {
+		List<Point> getObjects() {
 			return objects;
 		}
 
-		public int[] euclideanMeanDistance(List<Point> points) {
+		int[] euclideanMeanDistance(List<Point> points) {
 
 			int[] info = new int[KMeans.this.image.getDepth()];
 			int[] output = new int[info.length];
@@ -202,11 +198,5 @@ public class KMeans extends SegmentationAlgorithm {
 
 			return output;
 		}
-	}
-
-	public void run() {
-		randomInit();
-		rebuildClusters();
-		generateClusters();
 	}
 }

@@ -2,8 +2,8 @@ package model;
 
 public interface SegmentationObserver {
 	
-	public void onChange();
+	void onChange();
 
-	public void onComplete();
+	void onComplete();
 	
 }

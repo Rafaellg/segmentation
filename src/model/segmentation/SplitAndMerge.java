@@ -1,18 +1,12 @@
 package model.segmentation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import model.FeatureMatrix;
 import model.SegmentationObserver;
 
 /**
- * Implementación del método de segmentación split and merge.
+ * Metodo split and merge para segmentacao.
  */
 public class SplitAndMerge extends SegmentationAlgorithm {
 
@@ -23,39 +17,67 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 	private double mergeStandardDeviation = 10;
 	private int minSize = 3;
 
-	public void process(FeatureMatrix image, SegmentationObserver observer,
-			HashMap<String, String> params) {
+	public void process(FeatureMatrix image, SegmentationObserver observer, HashMap<String, String> params) {
 		this.image = image;
 		this.observer = observer;
 
-		/* Levantamos los parámetros de la segmentación. */
-
-		Double auxDouble;
-		Integer auxInteger;
-		String s;
-		s = params.get("splitStandardDeviation");
+		// Parametros da segmentacao
+		String s = params.get("splitStandardDeviation");
 		System.out.println(s);
-		if (s != null && (auxDouble = Double.parseDouble(s)) != null) {
-			splitStandardDeviation = auxDouble;
+		if (s != null) {
+			splitStandardDeviation = Double.parseDouble(s);
 		}
 		s = params.get("mergeStandardDeviation");
 		System.out.println(s);
-		if (s != null && (auxDouble = Double.parseDouble(s)) != null) {
-			mergeStandardDeviation = auxDouble;
+		if (s != null) {
+			mergeStandardDeviation = Double.parseDouble(s);
 		}
 		s = params.get("minSize");
 		System.out.println(s);
-		if (s != null && (auxInteger = Integer.parseInt(s)) != null) {
-			minSize = auxInteger;
+		if (s != null) {
+			minSize = Integer.parseInt(s);
 		}
 
-		System.out.println("Ejecutando split and merge "
-				+ splitStandardDeviation + " " + mergeStandardDeviation + " "
-				+ minSize);
+		System.out.println("Executando split and merge " + splitStandardDeviation + " " + mergeStandardDeviation + " " + minSize);
+	}
+
+	/**
+	 * Dada uma lista de segmentos, os ordena de menor para maior (tamanho), elimina os que contenham zonas (segmentos vazios)
+	 * e redistribui os numeros de segmento desde 1
+	 *
+	 * @param segments
+	 *            Lista de segmentos a processar.
+	 */
+	private void sortAndRemoveEmpty(ArrayList<ImageSegment> segments) {
+
+		List<ImageSegment> auxList = new ArrayList<>();
+		for (ImageSegment s : segments) {
+			if (s.size() != 0) {
+				auxList.add(s);
+			}
+		}
+
+		ImageSegment[] segmentsArray = new ImageSegment[auxList.size()];
+		Arrays.sort(auxList.toArray(segmentsArray),
+				Comparator.comparingInt(ImageSegment::size));
+
+        /*Arrays.sort(auxList.toArray(segmentsArray),
+        new Comparator<ImageSegment>() {
+            public int compare(ImageSegment arg0, ImageSegment arg1) {
+                return arg0.size() - arg1.size();
+            }
+        });*/
+
+		segments.clear();
+		int index = 1;
+		for (ImageSegment s : segmentsArray) {
+			segments.add(s);
+			s.segmentIndex = index++;
+		}
 	}
 
 	public void run() {
-		Set<ImageZone> zones = new HashSet<ImageZone>();
+		Set<ImageZone> zones = new HashSet<>();
 		int currentSegmentIndex = 1;
 		boolean changed = true;
 
@@ -66,32 +88,31 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		while (changed) {
 			if (Thread.interrupted())
 				return;
-			Set<ImageZone> auxZones = new HashSet<ImageZone>();
+			Set<ImageZone> auxZones = new HashSet<>();
 
 			changed = false;
 
 			for (ImageZone zone : zones) {
 
-				/* Pintar en la imagen los segmentos */
+				// Pinta os segmentos na imagem
 				for (int i = zone.yFrom; i < zone.yTo; i++) {
 					for (int j = zone.xFrom; j < zone.xTo; j++) {
 						image.getSegment()[i][j] = (byte) zone.segment.segmentIndex;
 					}
 				}
 
-				/* Determinar si el segmento se debe dividir o no */
+				// Determina se o segmento deve ser dividido ou nao
 				if (zone.isHomogeneus() || zone.size() <= minSize
 						|| zone.xTo - zone.xFrom == 1
 						|| zone.yTo - zone.yFrom == 1) {
 
-					/* No se divide */
+					// Nao divide
 					auxZones.add(zone);
 				} else {
 
-					/* Se divide */
+					// Divide
 					changed = true;
-					auxZones.addAll(Arrays.asList(zone
-							.divide(currentSegmentIndex)));
+					auxZones.addAll(Arrays.asList(zone.divide(currentSegmentIndex)));
 					currentSegmentIndex += 4;
 				}
 			}
@@ -101,13 +122,14 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/* COSMOVISION */
-		ArrayList<ImageSegment> segments = new ArrayList<ImageSegment>();
+		ArrayList<ImageSegment> segments = new ArrayList<>();
 		for (ImageZone zone : zones) {
 			if (Thread.interrupted())
 				return;
+
 			ImageSegment currentSegment = zone.segment;
 
-			Set<ImageZone> neighbourZones = new HashSet<ImageZone>();
+			Set<ImageZone> neighbourZones = new HashSet<>();
 			neighbourZones.addAll(zone.north);
 			neighbourZones.addAll(zone.south);
 			neighbourZones.addAll(zone.east);
@@ -128,33 +150,27 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 				return;
 			changed = false;
 
-			/*
-			 * Elimino los segmentos que no contengan zonas y ordeno la lista de
-			 * menor a mayor por tamaño.
-			 */
+			// Elimina os segmentos que nao possuam zonas e ordena a lista de menor para maior (tamanho)
 			sortAndRemoveEmpty(segments);
 
-			/*
-			 * Itero sobre los segmentos y busco si puedo juntar a alguien con
-			 * algun vecino.
-			 */
+			// Itera sobre os segmentos e busca se pode juntar com alguem com algum vizinho
 			for (ImageSegment segment : segments) {
 
-				/* Si quedo alguno sin zonas lo salteo. */
+				// Verifica se as areas permanecem sem qualquer salto
 				if (segment.zones.size() == 0)
 					continue;
 
-				/* Busco el mejor vecino homogéneo. */
+				// Busca o melhor vizinho homogeneo
 				ImageSegment bestNeighbour = segment
 						.getBestHomogeneousNeighbour();
 
-				/* Si lo encontré, me uno a él. */
+				// Se encontrado, me uno a ele
 				if (bestNeighbour != null) {
 
 					segment.mergeWithNeighbour(bestNeighbour);
 					changed = true;
 
-					/* Repinto el segmento en la imagen. */
+					// Repinta o segmento na imagem
 					for (ImageZone zone : segment.zones) {
 						for (int i = zone.yFrom; i < zone.yTo; i++) {
 							for (int j = zone.xFrom; j < zone.xTo; j++) {
@@ -171,73 +187,38 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 	}
 
-	/**
-	 * Dada una lista de segmentos, los ordena de menor a mayor tamaño, elimina
-	 * los que no contengan zonas (segmentos vacíos) y redistribuye los núemeros
-	 * de segmentos desde 1.
-	 * 
-	 * @param segments
-	 *            Lista de segmentos a procesar.
-	 */
-	private void sortAndRemoveEmpty(ArrayList<ImageSegment> segments) {
-
-		List<ImageSegment> auxList = new ArrayList<ImageSegment>();
-		for (ImageSegment s : segments) {
-			if (s.size() != 0) {
-				auxList.add(s);
-			}
-		}
-
-		ImageSegment[] segmentsArray = new ImageSegment[auxList.size()];
-		Arrays.sort(auxList.toArray(segmentsArray),
-				new Comparator<ImageSegment>() {
-					public int compare(ImageSegment arg0, ImageSegment arg1) {
-						return arg0.size() - arg1.size();
-					}
-				});
-
-		segments.clear();
-		int index = 1;
-		for (ImageSegment s : segmentsArray) {
-			segments.add(s);
-			s.segmentIndex = index++;
-		}
-		return;
-	}
+	// ---------- Objetos
 
 	/**
-	 * Un segmento de una imagen. Esta formado por varios ImageZone. Contiene un
-	 * conjunto de vecinos en las cuatro direcciones.
+     * Um segmento de uma imagem. Formado por varias ImageZone. Contem um conjunto de vizinho nas quatro direcoes.
 	 */
 	class ImageSegment {
 
-		private Set<ImageSegment> neighbours = new HashSet<ImageSegment>();
-		private Set<ImageZone> zones = new HashSet<ImageZone>();
+		private Set<ImageSegment> neighbours = new HashSet<>();
+		private Set<ImageZone> zones = new HashSet<>();
 		private int segmentIndex;
 
 		/**
-		 * Crea un nuevo segmento con una Ãºnica zona y el numero de segmento
-		 * especificado.
+         * Cria um novo segmento com uma unica zona e um numero especifico de segmentos
 		 */
-		public ImageSegment(ImageZone zone, int segment) {
+        ImageSegment(ImageZone zone, int segment) {
 			this.zones.add(zone);
 			zone.segment = this;
 			this.segmentIndex = segment;
 		}
 
 		/**
-		 * Busca entre todos los vecinos aquellos con los cuales es homogéneo, y
-		 * de todos estos retorna el que tendría menor desvío en el feature
-		 * vector si se juntara con él.
-		 * 
-		 * @return El mejor vecino homogéneo.
+         * Busca entre todos os vizinhos aqueles que sao homogeneos, e de todos estes retorna o que tem o menor desvio no vetor
+         * e se juntara com ele
+		 *
+		 * @return O melhor vertice homogeneo
 		 */
-		public ImageSegment getBestHomogeneousNeighbour() {
+        ImageSegment getBestHomogeneousNeighbour() {
 
 			double bestNeighbourDistance = Double.MAX_VALUE;
 			ImageSegment bestNeighbour = null;
 
-			/* Busco el mejor vecino */
+			// Busca o melhor vizinho
 			for (ImageSegment neighbour : this.neighbours) {
 				if (neighbour.size() == 0) {
 					continue;
@@ -254,10 +235,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/**
-		 * Verifica si el segmento actual es homogÃ©neo con respecto a otro
-		 * segmento.
+         * Verifica se o segmento atual e homogeneo com outro segmento
 		 */
-		public boolean isHomogeneousWithRespectTo(ImageSegment segment) {
+        boolean isHomogeneousWithRespectTo(ImageSegment segment) {
 			for (int i = 0; i < image.getDepth(); i++) {
 				if (this.distanceWith(segment, i) > mergeStandardDeviation)
 					return false;
@@ -266,58 +246,51 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/**
-		 * Junta el segmento actual con otro. Todas las zonas del otro son
-		 * transferidas al segmento actual, asi como los vecinos, y todas las
-		 * referencias son actualizadas. Luego de esta invocación, el segmento
-		 * que se pasó por parámetro podría ser eliminado de la lista de
-		 * segmentos.
+         * Junta o segmento atual com outro. Todas as zonas do outro sao transferidas para o atual, assim como os vizinhos,
+         * e todas as referencias sao atualizadas. Posteriormente, o segmento passado por parametro podera ser eliminado da
+         * lista de segmentos
 		 * 
 		 * @param segment
-		 *            Segmento con el cual unirme.
+		 *            Segmentos que deve ser unido.
 		 */
-		public void mergeWithNeighbour(ImageSegment segment) {
+        void mergeWithNeighbour(ImageSegment segment) {
 
 			segment.segmentIndex = 0;
 
-			/* Mover todas las zonas de segment hacia mi */
+			// Mover todas as zonas de segmento vazia para mim
 			for (ImageZone zone : segment.zones) {
 				zone.segment = this;
 			}
 			this.zones.addAll(segment.zones);
 			segment.zones.clear();
 
-			/*
-			 * Cambiar las referencias desde los vecinos de segment. Ojo porque
-			 * entre estos vecinos estoy yo (yo soy vecino de mi vecino)
-			 */
+			// Troca as referencias dos vizinhos do segmento.
 			for (ImageSegment neighbour : segment.neighbours) {
 				neighbour.neighbours.remove(segment); /* siempre */
 
-				/* Evito tenerme a mi como vecino. */
+				// Nao me considero vizinho
 				if (neighbour != this) {
 					neighbour.neighbours.add(this);
 				}
 			}
 
-			/* Agregarle a mis vecinos los vecinos de segment. */
+			// Adiciono ele a meus vizinhos no segmento
 			this.neighbours.addAll(segment.neighbours);
 			this.neighbours.remove(this);
 
-			/* Borramos los vecinos y las zonas del vecino */
+			// Excluimos os vizinhos e as zonas do mesmo
 			segment.neighbours.clear();
 			segment.zones.clear();
 		}
 
 		/**
-		 * Calcula el desvío estándar de cada componente del feature vector con
-		 * respecto al del vecino que recibe por argumento. Luego toma la norma
-		 * de dicho vector y la retorna.
+         * Calcula o desvio padrao de cada componente do vetor a respeito do vizinho que recebe como argumento.
 		 * 
 		 * @param segment
-		 *            Vecino con el cual medir la distancia.
-		 * @return Norma de los desvíos.
+		 *            Vizinho usado para medir a distancia
+		 * @return Desvio padrao.
 		 */
-		public double distanceWithNeighbour(ImageSegment segment) {
+        double distanceWithNeighbour(ImageSegment segment) {
 			double acum = 0;
 			for (int i = 0; i < image.getDepth(); i++) {
 				acum += Math.pow(this.distanceWith(segment, i), 2);
@@ -326,14 +299,13 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/**
-		 * Calcula el desvío de todos los píxeles del segmento actual con los
-		 * del segmento, para una sola componente del feature vector.
+         * Calcula o desvio padrao de todos os pixels do segmento atual com os do segmento, para um componente do vetor.
 		 * 
 		 * @param segment
-		 *            Segmento con el cual compararme.
+		 *            Segmento que sera comparado.
 		 * @param feature
-		 *            Dimension a evaluar del feature vector.
-		 * @return Desvio estándar de dicha dimensión.
+		 *            Dimensao a avaliar o vetor
+		 * @return Desvio padrao da dimensao.
 		 */
 		private double distanceWith(ImageSegment segment, int feature) {
 
@@ -382,12 +354,11 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/**
-		 * Calcula el tamaño de un segmento como la sumatoria de los tamaños de
-		 * las zonas que contiene.
+         * Calcula o tamanho de um segmento com a somatoria dos tamanhos das zonas contidas nele
 		 * 
-		 * @return Cantidad de píxeles que abarca el segmento.
+		 * @return Quantidade de pixels que incluem o segmento.
 		 */
-		public int size() {
+		int size() {
 			int count = 0;
 			for (ImageZone zone : zones) {
 				count += (zone.yTo - zone.yFrom) * (zone.xTo - zone.xFrom);
@@ -397,8 +368,7 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 	}
 
 	/**
-	 * Un cuadrado de la imagen. Un segmento va a estar formado por varios de
-	 * estos.
+     * Um quadrado da imagem. Um segmento e formado por varios deste.
 	 */
 	class ImageZone {
 		private int xFrom;
@@ -408,17 +378,17 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 
 		private ImageSegment segment;
 
-		private Set<ImageZone> east = new HashSet<ImageZone>();
-		private Set<ImageZone> west = new HashSet<ImageZone>();
-		private Set<ImageZone> north = new HashSet<ImageZone>();
-		private Set<ImageZone> south = new HashSet<ImageZone>();
+		private Set<ImageZone> east = new HashSet<>();
+		private Set<ImageZone> west = new HashSet<>();
+		private Set<ImageZone> north = new HashSet<>();
+		private Set<ImageZone> south = new HashSet<>();
 
-		public ImageZone(int x_from, int x_to, int y_from, int y_to,
+		ImageZone(int x_from, int x_to, int y_from, int y_to,
 				int segmentIndex) {
 
 			if (x_to <= x_from || y_to <= y_from) {
 				throw new RuntimeException(
-						"No puede existir una zona de menos de 1 pixel.");
+						"Nao pode existir uma zona menor do que 1 pixel.");
 			}
 
 			this.xFrom = x_from;
@@ -430,10 +400,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 		}
 
 		/**
-		 * Divide un segmento que contiene solamente una zona, y retorna 4
-		 * segmentos, cada uno con 1 zona.
+         * Divide um segmento que contem apenas uma zona e retorna 4 segmentos, cada um com 1 zona.
 		 */
-		public ImageZone[] divide(int segment) {
+		ImageZone[] divide(int segment) {
 
 			int x_mid = xFrom + ((xTo - xFrom) / 2);
 			int y_mid = yFrom + ((yTo - yFrom) / 2);
@@ -443,10 +412,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 			ImageZone sw = new ImageZone(xFrom, x_mid, y_mid, yTo, segment + 2);
 			ImageZone se = new ImageZone(x_mid, xTo, y_mid, yTo, segment + 3);
 
-			/* Vamos a fijar a los vecinos externos del norte */
-
-			nw.north = new HashSet<ImageZone>();
-			ne.north = new HashSet<ImageZone>();
+			// Define para os vizinhos do norte externos
+			nw.north = new HashSet<>();
+			ne.north = new HashSet<>();
 			for (ImageZone neighbour : north) {
 				neighbour.south.remove(this);
 
@@ -461,10 +429,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 				}
 			}
 
-			/* Vamos a fijar a los vecinos externos del sur */
-
-			sw.south = new HashSet<ImageZone>();
-			se.south = new HashSet<ImageZone>();
+            // Define para os vizinhos do sul externos
+			sw.south = new HashSet<>();
+			se.south = new HashSet<>();
 			for (ImageZone neighbour : south) {
 				neighbour.north.remove(this);
 
@@ -479,10 +446,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 				}
 			}
 
-			/* Vamos a fijar los vecinos externos del west */
-
-			nw.west = new HashSet<ImageZone>();
-			sw.west = new HashSet<ImageZone>();
+            // Define para os vizinhos do norte oeste
+			nw.west = new HashSet<>();
+			sw.west = new HashSet<>();
 			for (ImageZone neighbour : west) {
 				neighbour.east.remove(this);
 
@@ -497,10 +463,9 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 				}
 			}
 
-			/* Vamos a los vecinos externos del east */
-
-			ne.east = new HashSet<ImageZone>();
-			se.east = new HashSet<ImageZone>();
+            // Define para os vizinhos do norte leste
+			ne.east = new HashSet<>();
+			se.east = new HashSet<>();
 			for (ImageZone neighbour : east) {
 				neighbour.west.remove(this);
 
@@ -516,23 +481,22 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 			}
 
 			/* Vecinos internos */
-			nw.south = new HashSet<ImageZone>(Arrays.asList(sw));
-			nw.east = new HashSet<ImageZone>(Arrays.asList(ne));
-			ne.west = new HashSet<ImageZone>(Arrays.asList(nw));
-			ne.south = new HashSet<ImageZone>(Arrays.asList(se));
-			sw.north = new HashSet<ImageZone>(Arrays.asList(nw));
-			sw.east = new HashSet<ImageZone>(Arrays.asList(se));
-			se.north = new HashSet<ImageZone>(Arrays.asList(ne));
-			se.west = new HashSet<ImageZone>(Arrays.asList(sw));
+			nw.south = new HashSet<>(Collections.singletonList(sw));
+			nw.east = new HashSet<>(Collections.singletonList(ne));
+			ne.west = new HashSet<>(Collections.singletonList(nw));
+			ne.south = new HashSet<>(Collections.singletonList(se));
+			sw.north = new HashSet<>(Collections.singletonList(nw));
+			sw.east = new HashSet<>(Collections.singletonList(se));
+			se.north = new HashSet<>(Collections.singletonList(ne));
+			se.west = new HashSet<>(Collections.singletonList(sw));
 
 			return new ImageZone[] { nw, ne, sw, se };
 		}
 
 		/**
-		 * Verifica si el segmento actual cumple el criterio de homogeneidad o
-		 * no.
+         * Verifica se o segmento atual cumpre o criterio de homogenidade.
 		 */
-		public boolean isHomogeneus() {
+		boolean isHomogeneus() {
 			for (int i = 0; i < image.getDepth(); i++) {
 				if (this.standardDeviation(i) > splitStandardDeviation)
 					return false;
@@ -540,7 +504,7 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 			return true;
 		}
 
-		public double standardDeviation(int feature) {
+		double standardDeviation(int feature) {
 			double mean = mean(feature);
 			double acum = 0;
 			int count = 0;
@@ -556,7 +520,7 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 			return Math.sqrt(acum);
 		}
 
-		public double mean(int feature) {
+		double mean(int feature) {
 			double acum = 0;
 			int count = 0;
 
@@ -570,7 +534,7 @@ public class SplitAndMerge extends SegmentationAlgorithm {
 			return acum / count;
 		}
 
-		public int size() {
+		int size() {
 			return (xTo - xFrom) * (yTo - yFrom);
 		}
 	}

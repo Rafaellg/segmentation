@@ -81,10 +81,10 @@ public class FeatureMatrix {
 
 	private int segmentCount() {
 
-		Set<Integer> set = new TreeSet<Integer>();
+		Set<Integer> set = new TreeSet<>();
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				set.add(new Integer(segment[i][j]));
+				set.add((int) segment[i][j]);
 			}
 		}
 

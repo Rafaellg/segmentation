@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class ImageMatrix {
 	
-	int[][] pixels;
-	int width;
-	int height;
+	private int[][] pixels;
+	private int width;
+	private int height;
 
 	public ImageMatrix(int width, int height) {
 		this.width = width;
@@ -31,7 +31,7 @@ public class ImageMatrix {
 		try {
 			grabber.grabPixels();
 		} catch (InterruptedException e) {
-			throw new IOException("Error al leer los píxeles de la imagen de entrada.");
+			throw new IOException("Erro lendo os pixels da imagem de entrada");
 		}
 		
 		for (int i=0; i<this.height; i++) {
@@ -45,9 +45,7 @@ public class ImageMatrix {
 		int[] pixelsTemp = new int[this.width * this.height];
 		
 		for (int i=0; i<this.height; i++) {
-			for (int j=0; j<this.width; j++) {
-				pixelsTemp[i * this.width + j] = this.pixels[i][j];
-			}
+			System.arraycopy(this.pixels[i], 0, pixelsTemp, i * this.width, this.width);
 		}
 		
 		return new MemoryImageSource(this.width, this.height, pixelsTemp, 0, this.width);
